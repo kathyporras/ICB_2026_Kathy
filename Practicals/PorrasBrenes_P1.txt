@@ -1,0 +1,97 @@
+Exercises of first part
+
+Navigate to your home directory
+I was in the DataFiles directory so I just wrote this to come back:
+
+kathy@Katherines-MacBook-Pro Documents % cd ../../
+
+kathy@Katherines-MacBook-Pro /Users % ls
+
+kathy   Shared
+
+kathy@Katherines-MacBook-Pro /Users % cd kathy
+
+kathy@Katherines-MacBook-Pro ~ % ls
+
+DaVinci Resolve Media    Music
+
+Desktop             OneDrive - Virginia Tech
+
+Documents            Pictures
+
+Downloads            Public
+
+Library             Tree.R
+
+Movies
+
+ 
+
+Navigate to another path of my computer
+ 
+
+kathy@Katherines-MacBook-Pro Documents % cd VT/Research/CommitteeMeetings
+
+kathy@Katherines-MacBook-Pro CommitteeMeetings %
+
+ 
+
+To go to DataFiles directory
+ 
+
+kathy@Katherines-MacBook-Pro CommitteeMeetings % cd ../../IntroCompBio/IntroBiolComp-2026/Python/DataFiles
+
+ 
+
+To go to sandbox
+kathy@Katherines-MacBook-Pro DataFiles % cd ../../Unix/sandbox
+
+ 
+
+Exercise of second part
+
+To navigate to Data Files directory, I used:
+kathy@Katherines-MacBook-Pro ~ % cd /Users/kathy/Documents/VT/IntroCompBio/IntroBiolComp-2026/Unix/DataFiles
+
+ 
+
+How many lines are in the file BeeSpecies.txt? 19509
+kathy@Katherines-MacBook-Pro DataFiles % wc -l BeeSpecies.txt
+
+   19509 BeeSpecies.txt
+
+ 
+
+Without leaving the current directory count the number of words in the CodonTable.tsv file in the Data Files directory.
+I was already in the DataFiles directory from the previous question. They were 195 words in the document, and I used this code:
+
+kathy@Katherines-MacBook-Pro DataFiles % wc CodonTable.tsv
+
+      65     195     663 CodonTable.tsv
+
+ 
+
+What is the last codon reported in this file? TTT
+ 
+
+kathy@Katherines-MacBook-Pro DataFiles % tail CodonTable.tsv
+
+TCG Ser S
+
+TCT Ser S
+
+TGA Stp O
+
+TGC Cys C
+
+TGG Trp W
+
+TGT Cys C
+
+TTA Leu L
+
+TTC Phe F
+
+TTG Leu L
+
+TTT Phe F
