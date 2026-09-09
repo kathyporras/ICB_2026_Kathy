@@ -58,3 +58,9 @@ wc CodonTable.tsv
 ```bash
 tail CodonTable.tsv
 ```
+### Important
+I used this code to synchronize my local and remote repositories:
+
+```bash
+git pull
+```
