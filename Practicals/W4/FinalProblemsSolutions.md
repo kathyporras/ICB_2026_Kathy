@@ -89,3 +89,6 @@ for codon in codons:
 aminoacids
 ['Leu', 'Gly', 'Val', 'Ile', 'Ser']
 ```
+>[!NOTE]
+>This is definitely a good solution. Since you didn't know how to open files or how to loop, a valid solution would have been to create the entire dictionary by hand, and then to search for each codon using `dict.get(codons[1])`, etc...
+>Nice googling though. 
