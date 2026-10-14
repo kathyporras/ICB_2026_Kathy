@@ -1,0 +1,23 @@
+---
+title: "FinalProblemsSolutions"
+author: "Kathy"
+date: "2026-10-14"
+output: html_document
+---
+
+# Final Problems
+
+## 7.1 Disease Risks
+
+1. How many people were samples in total? The total number of genotypess at each site gives us the total number of people sequenced, but not everyone is sequenced for every site. Find the maximum of the sum of nA1A1, nA1A2, and nA2A2.
+
+```{r}
+data <- read.table("H938_Euro_chr6.geno", sep=" ", header = T)
+head(data)
+
+```
+```{r}
+
+```
+
+
