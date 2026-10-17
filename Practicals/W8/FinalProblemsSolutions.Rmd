@@ -2,7 +2,7 @@
 title: "FinalProblemsSolutions"
 author: "Kathy"
 date: "2026-10-14"
-output: html_document
+output: md_document
 ---
 
 # Final Problems
@@ -18,7 +18,7 @@ head(data)
 ```
 ```{r}
 #the maximum of the sum of nA1A1, nA1A2, and nA2A2
-total <- (geno$nA1A1 + geno$nA1A2 + geno$nA2A2)
+total <- (data$nA1A1 + data$nA1A2 + data$nA2A2)
 max(total)
 ```
 
@@ -26,7 +26,7 @@ max(total)
 
 ```{r}
 ?rowSums() #we have to tell the function from where (geno) and the name of the columns that we want it to sum.
-total2 <- rowSums(geno[,c("nA1A1", "nA1A2", "nA2A2")])
+total2 <- rowSums(data[,c("nA1A1", "nA1A2", "nA2A2")])
 max(total2)
 ```
 
@@ -39,21 +39,20 @@ head(risks)
 ```{r}
 #I'm addind the new column to the other doc.
 risksCol <- risks$Risk
-data 
-geno$Risks <- risksCol
-head(geno)
+data$Risks <- risksCol
+head(data)
 ```
 4. On average, how many individuals are heterozygous at sites associated with disease risk? On sites not associated with disease risk?
 
 ```{r}
 #heterozygous are nA1A2
 #mean of heterozygous people associated to sites with disease risk
-mean(geno$nA1A2[geno$Risks == "Risk"])
+mean(data$nA1A2[data$Risks == "Risk"])
 ```
 
 ```{r}
 #mean of heterozygous people associated to sites without disease risk
-mean(geno$nA1A2[geno$Risks == "Non-Risk"])
+mean(data$nA1A2[data$Risks == "Non-Risk"])
 ```
 
 ## 7.2 Data Cleanup
@@ -97,7 +96,6 @@ summary(mammals)
 write.table(mammals, "Smith2003_clean.txt", sep = "\t", row.names = F, col.names = F, quote = F)
 cleanMammals <- read.table("Smith2003_clean.txt", sep="\t", header = F)
 #All the -999 of the 2 columns were changed.
-View(cleanMammals)
 ```
 
 
