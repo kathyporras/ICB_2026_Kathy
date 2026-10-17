@@ -2,7 +2,7 @@
 title: "FinalProblemsSolutions"
 author: "Kathy"
 date: "2026-10-14"
-output: md_document
+output: html_document 
 ---
 
 # Final Problems
