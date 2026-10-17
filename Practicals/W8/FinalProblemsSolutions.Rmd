@@ -17,7 +17,88 @@ head(data)
 
 ```
 ```{r}
-
+#the maximum of the sum of nA1A1, nA1A2, and nA2A2
+total <- (geno$nA1A1 + geno$nA1A2 + geno$nA2A2)
+max(total)
 ```
+
+2. Use the function rowSums() to get the same result.
+
+```{r}
+?rowSums() #we have to tell the function from where (geno) and the name of the columns that we want it to sum.
+total2 <- rowSums(geno[,c("nA1A1", "nA1A2", "nA2A2")])
+max(total2)
+```
+
+3. The file R/DataFiles/SNP_risks.csv is a comma-separated file that contains data on whether ach of the sites genotyped is associated with the risk of developing a disease. Read this table into R and, and join its third column to the six columns of H938_Euro_chr6.geno.
+
+```{r}
+risks <- read.table("SNP_risks.csv", sep=",", header = T)
+head(risks)
+```
+```{r}
+#I'm addind the new column to the other doc.
+risksCol <- risks$Risk
+data 
+geno$Risks <- risksCol
+head(geno)
+```
+4. On average, how many individuals are heterozygous at sites associated with disease risk? On sites not associated with disease risk?
+
+```{r}
+#heterozygous are nA1A2
+#mean of heterozygous people associated to sites with disease risk
+mean(geno$nA1A2[geno$Risks == "Risk"])
+```
+
+```{r}
+#mean of heterozygous people associated to sites without disease risk
+mean(geno$nA1A2[geno$Risks == "Non-Risk"])
+```
+
+## 7.2 Data Cleanup
+
+Smith et al. (2003) compiled a database of the body mass of mammals of the late Quaternary period, which are saved in the tab-delimited file R/DataFiles/Smith2003_data.txt.
+
+1. Read the file into R. How many species are represented in the file?
+```{r}
+#text separated by tabs without titles!
+mammals <- read.table("Smith2003_data.txt", sep="\t", header = F)
+head(mammals)
+```
+
+```{r}
+#assuming that all epithets are unique, (which probably not):
+length(mammals$V6)
+```
+
+```{r}
+#assuming that species might be repeated, I decided to google how can I look for unique values in the column of genus and species, because they can repeat within the same column. Theres a function called unique!
+?unique()
+nrow(unique(mammals[, c("V5", "V6")]))
+```
+
+2. Column 7 contains log(body mass), and column 8 contains raw body mass values. Missing values are expressed as "-999". R uses "NA" for missing values. Write code that replaces "-999" for "NA" in both columns, and writes a file with the "clean" data.
+
+```{r}
+#just checking if colums 7 and 8 are deteted as numbers already and they are! I can also see that min values are -999
+summary(mammals)
+
+mammals$V7 <- gsub("-999", NA, mammals$V7)
+mammals$V8  <- gsub("-999", NA, mammals$V8)
+
+#now they are all removed.
+summary(mammals)
+
+``` 
+```{r}
+#if I use this code, everything is quoted in the text, so I'll add quote=F so that it removes it.
+#write.table(mammals, "Smith2003_clean.txt", sep = "\t", row.names = F, col.names = F)
+write.table(mammals, "Smith2003_clean.txt", sep = "\t", row.names = F, col.names = F, quote = F)
+cleanMammals <- read.table("Smith2003_clean.txt", sep="\t", header = F)
+#All the -999 of the 2 columns were changed.
+View(cleanMammals)
+```
+
 
 
