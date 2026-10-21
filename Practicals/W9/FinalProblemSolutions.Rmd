@@ -1,0 +1,12 @@
+---
+title: "FinalProblemSolutions"
+author: "Kathy"
+date: "2026-10-21"
+output: html_document
+---
+
+# Final Problems
+
+## 4.1 File Processing 
+
+
