@@ -2,11 +2,127 @@
 title: "FinalProblemSolutions"
 author: "Kathy"
 date: "2026-10-21"
-output: html_document
+output: md_document
 ---
 
 # Final Problems
 
 ## 4.1 File Processing 
 
+Write an R script that loads every file, reports the number of rows and columns in each matrix, as well as the proportion of entries that are 1 and 0. Report your results in a tab-delimited file called MatrixStats.tsv
+
+```{r}
+setwd("~/Documents/VT/IntroCompBio/ICB_2026_Kathy/Practicals/W9")
+
+#get all the files of the folder
+files <- list.files("Saavedra2013")
+
+#creating an empty file to save results
+results <- data.frame()
+
+#loop to extract the data
+for (file in files) {
+  mat <- read.table(paste("Saavedra2013", file, sep="/"))
+
+  #number of rows and columns
+  Nrow <- nrow(mat)
+  Ncol <- ncol(mat)
+
+  #calculating proportions of 1 and 0 by counting all the 1/0s and diving them by the total of values (multiplication of columns by rows)
+  p_1 <- sum(mat == 1) / (Nrow * Ncol)
+  p_0 <- sum(mat == 0) / (Nrow * Ncol)
+
+  #setting and adding variables into the new data frame
+  results <- rbind(results, data.frame(
+    File = file,
+    Nrow = Nrow,
+    Ncol = Ncol,
+    p_1 = p_1,
+    p_0 = p_0
+  ))
+}
+
+
+write.table(results, "MatrixStats.tsv", sep = "\t", row.names = FALSE)
+
+MatrixStats <- read.table("MatrixStats.tsv", sep= "\t", header = T)
+head(MatrixStats)
+
+```
+
+## Leaf areas
+
+1. Install the EBImage
+
+```{r}
+BiocManager::install("EBImage")
+library(EBImage)
+```
+
+2. Write a for loop that processes all images using the function getArea, which is provided in the folder. Your loop should record the leaf area for each image, and store it in the data frame results. 
+
+```{r}
+#running the function provided
+source("getArea.R")
+
+#getting the names of all images
+files <- list.files("leafarea", pattern = "\\.JPG$")
+#there are 44 pictures
+length(files)
+
+#creating an empty file to save results
+results <- data.frame()
+
+#loop to analyze all images
+for (file in files) {
+
+  area <- getArea(file)
+
+#saving the results
+  results <- rbind(results, data.frame(
+    File = file,
+    Area = area
+  ))
+}
+
+head(results)
+
+```
+3. Calculate the change in leaf area between time points 1 and 2 for each plant, and add it as a column in your data frame. How much did the leaves grow between time points on average?
+
+```{r}
+#I decided to do it from the folder with all the files because I'm not sure how to do it with the data frame I created.
+
+#getting the time 1 and time 2 according to the name of the picture
+t1 <- list.files("leafarea", pattern = "^t1.*\\.JPG$")
+t2 <- list.files("leafarea", pattern = "^t2.*\\.JPG$")
+
+#creating a column to save the change of area in the leaves. We put NA because we still don't have the values. but it's like an empty column
+results$Change <- NA
+
+#calculating the change in leaf area for each plant
+for (i in 1:length(t1)) {
+
+  #we extract from our data frame the values of area of point t1 and t2.
+  area_t1 <- results$Area[results$File == t1[i]]
+  area_t2 <- results$Area[results$File == t2[i]]
+  #we add the results in our empty column and the result is going to show up just   in the row of the t2 pictures
+  results$Change[results$File == t2[i]] <- area_t2 - area_t1
+}
+
+#so that we can see the rows of t2 with the change of area
+tail(results)
+
+```
+
+```{r}
+#how much did the leaves grow on average. We have to add NA true to just ignore them, because he have multiple NA's from the t1's
+mean(results$Change, na.rm = TRUE)
+```
+
+4. Save your results as a comma-separated file and include them in your repository.
+
+```{r}
+write.table(results, file="leafarea.csv", sep=",")
+```
 
