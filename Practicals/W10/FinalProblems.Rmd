@@ -1,0 +1,251 @@
+---
+title: "Final Problems Solutions"
+author: "Kathy"
+date: "2026-11-02"
+output: md_document
+---
+
+## Are most toads right handed?
+
+Humans do not only show preferential use of one of our hands, but the majority of the population also shows preference for using the right hand. In other words, most humans are right-handed. In this exercise you will test whether the same is true for toads.
+
+The file R/DataFiles/Toad_Handedness.tsv contains their results.
+
+1. For each toad, use simulations to determine whether the results support right handedness, left handedness or no handedness.
+
+```{r}
+
+#opening the file
+toads <- read.table("Toad_Handedness.tsv", header = T)
+head(toads)
+
+```
+
+```{r}
+#number of experiments
+nExp <- 10000
+
+#empty data frame to save results at the end
+results <- data.frame(
+  toad = 1:nrow(toads),
+  right_hand = numeric(nrow(toads)),
+  p_value = numeric(nrow(toads))
+)
+
+#probability for each toad
+for(j in 1:nrow(toads)){
+  right_ct <- c()
+  n <- toads$N_trials[j]
+  
+#simulation
+  for(i in 1:nExp){
+    experiment <- sample(c("R", "L"), size = n, prob = c(0.5, 0.5), replace = TRUE)
+    right <- sum(experiment == "R")
+    right_ct[i] <- right
+  }
+
+#probabilities
+probs <- table(factor(right_ct, levels = 0:n))/nExp
+
+#Observed number of right hands
+observed <- toads$N_rights[j]
+
+#calculating p-value
+p_value <- sum(probs[as.numeric(names(probs)) >= observed]) +
+           sum(probs[as.numeric(names(probs)) <= n - observed])
+
+#save results
+  results$right_hand[j] <- observed
+  results$p_value[j] <- p_value
+}
+
+#here I'm going to add a column with the conclusion. This is based on if p-value is < 0.05 and the occurrence of right/left is higher than 50%.
+
+results$handedness <- ifelse(
+  results$p_value < 0.05 & results$right_hand > toads$N_trials/2,
+  "Right handed",
+  ifelse(
+    results$p_value < 0.05 & results$right_hand < toads$N_trials/2,
+    "Left handed",
+    "No handedness"
+  )
+)
+
+results
+
+```
+
+2. Using your results from 1. test the null hypothesis that a frog is equally likely to be right or left handed.
+
+```{r}
+
+#keep only toads with handedness (however all of them are right!!),this means that pvalue has to be < 0.05 because there's not the same probability of being right and left handed with this data.
+handed <- results$handedness[results$handedness != "No handedness"]
+# Number of toads with handedness
+n <- length(handed)
+#observed number of right-handed toads by counting the right handed toads
+observed <- sum(handed == "Right handed")
+
+right_ct <- c()
+
+# Simulation
+for(i in 1:nExp){
+  experiment <- sample(c("R", "L"), size = n, prob = c(0.5, 0.5), replace = TRUE)
+  right <- sum(experiment == "R")
+  right_ct[i] <- right
+}
+
+#calculate probabilities
+probs <- table(factor(right_ct, levels = 0:n))/nExp
+
+#calculate p-value
+p_value <- sum(probs[as.numeric(names(probs)) >= observed]) +
+           sum(probs[as.numeric(names(probs)) <= n - observed])
+
+#we got p-value < 0.05. As I said before, it's because our data, but if I get left handed frogs it might have variability to calculate de pvalue.
+p_value
+
+
+```
+
+3. Using randomization test the null hypothesis that males and females are equally likely to be right handed
+
+```{r}
+
+#this code is in case we suspect differences between males and females because with this dataset I already know that there won't be difference because all of them ended up being right handed.
+
+#permutations
+nPer <- 10000
+
+#sex and handedness
+toad_data <- data.frame(
+  Sex = toads$Sex,
+  handedness = results$handedness
+)
+
+#proportion of right-handed males
+male_right <- mean(toad_data$handedness[toad_data$Sex == "M"] == "Right handed")
+
+#proportion of right-handed females
+female_right <- mean(toad_data$handedness[toad_data$Sex == "F"] == "Right handed")
+
+#difference
+obs_diff <- male_right - female_right
+
+#vector to save results
+diff_sex <- c()
+
+#randomization
+for(i in 1:nPer){
+  sex_shuf <- sample(toad_data$Sex, size = nrow(toad_data), replace = FALSE)
+  male_right <- mean(toad_data$handedness[sex_shuf == "M"] == "Right handed")
+  female_right <- mean(toad_data$handedness[sex_shuf == "F"] == "Right handed")
+  diff_sex[i] <- male_right - female_right
+}
+
+#calculating p-value
+p_value <- mean(abs(diff_sex) >= abs(obs_diff))
+
+#results: there are no differences between males and females in this data
+p_value
+```
+
+## Assortative Mating in Animals (A & W 4.10.1)
+
+Jiang et al. (2013) studied assortative mating in animals. They compiled a large database, reporting the results of many experiments on mating. In particular, for several taxa they provide the value of correlation among the sizes of the mates. A positive value of r stands for assortative mating (large animals tend to mate with large animals), and a negative value for disassortative mating.
+
+1. You can find the data in R/DataFiles//Jiang2013_data.csv. Write a function that takes as input the desired Taxon and returns the mean value of r.
+
+```{r}
+
+mating <- read.csv("Jiang2013_data.csv", sep = "\t", header = T)
+head(mating)
+
+```
+
+```{r}
+#developing the fuction to calculate mean of r of each taxon
+
+meanM <- function(taxon){
+  group <- mating$r[mating$Taxon == taxon]
+  result <- mean(group)
+  return(result)
+}
+
+meanM("Amphibian")
+```
+
+
+2. You should see that fish have a positive value of r, but that this is also true for other taxa. Is the mean value of r especially high for fish? To test this, compute a p-value by repeatedly sampling 37 values of r at random from the entire dataset (37 experiments on fish are reported in the database), and calculating the probability of observing a higher mean value of r. To get an accurate estimate of the p-value, use 50,000 randomizations.
+
+```{r}
+
+#randomizations
+nExp <- 50000
+
+#mean r for fish
+fish_mean <- mean(mating$r[mating$Taxon == "Fish"])
+
+#vector to save results
+random_means <- c()
+
+#randomization
+for(i in 1:nExp){
+  #here the replacement is false because we are randomly selecting 37 different values, no repeated
+  random_sample <- sample(mating$r, size = 37, replace = F)
+  random_means[i] <- mean(random_sample)
+}
+
+#calculating p-value
+p_value <- sum(random_means >= fish_mean)/nExp
+
+#results 
+p_value
+
+#this p value since it's < 0.05 tells us that it's unlikely to obtain a mean as high as or higher than the fish mean by chance.
+
+```
+
+3. Repeat the procedure for all taxa.
+
+```{r}
+
+#all taxa, unique values fish amphibian crustacean etc
+all_taxa <- unique(mating$Taxon)
+
+#randomizations
+nExp <- 50000
+
+#data frame to save results
+results <- data.frame(Taxon = all_taxa, mean = NA, p_value = NA)
+
+#each taxon
+for(j in 1:length(all_taxa)){
+  #selecting the r values for this taxon
+  rs <- mating$r[mating$Taxon == all_taxa[j]]
+  #calculating the mean of r per taxon
+  mean <- mean(rs)
+  #experiments for this taxon, in fish was 37 but it might vary across taxa
+  n <- length(rs)
+  #random means
+  random_means <- c()
+
+  #randomization
+  for(i in 1:nExp){
+    random_sample <- sample(mating$r, size = n, replace = FALSE)
+    random_means[i] <- mean(random_sample)
+  }
+
+  #calculate p-value
+  p_value <- sum(random_means >= mean) / nExp
+
+  # Save results
+  results$mean[j] <- mean
+  results$p_value[j] <- p_value
+}
+
+# Display results
+results
+
+```
+
