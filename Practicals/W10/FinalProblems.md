@@ -172,6 +172,9 @@ The file R/DataFiles/Toad\_Handedness.tsv contains their results.
 
     ## [1] 1
 
+>[!NOTE]
+>I would have calculated a two-tailed p-value here. 
+
 ## Assortative Mating in Animals (A & W 4.10.1)
 
 Jiang et al. (2013) studied assortative mating in animals. They compiled
